@@ -4,3 +4,4 @@ tmp
 backup
 temp
 target
+*.p12

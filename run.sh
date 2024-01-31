@@ -44,8 +44,10 @@ for FILE in $JMETER_TESTPLANS/*;
         echo "-Jthrottle.record.size=$THROTTLE_RECORD_SIZE \ "
         echo "-Jthrottle.message.num=$THROTTLE_MESSAGE_NUM \ "
         echo "-Jnumber.records=$NUMBER_RECORDS \ "
-        echo "-Jtrustore.path=$TRUSTSTORE_PATH \ "
-        echo "-Jtruststore.pass=$TRUSTSTORE_PASS; "
+        echo "-Jssl.truststore.location=$SSL_TRUSTSTORE_LOCATION_CONFIG \ "
+        echo "-Jssl.truststore.password=$SSL_TRUSTSTORE_PASSWORD_CONFIG \ "
+        echo "-Jsasl.jaas.username=$SASL_JAAS_USERNAME \ "
+        echo "-Jsasl.jaas.password=$SASL_JAAS_PASSWORD; "
         echo
         
         jmeter -n -t $FILE \
@@ -75,7 +77,9 @@ for FILE in $JMETER_TESTPLANS/*;
         -Jthrottle.record.size=$THROTTLE_RECORD_SIZE \
         -Jthrottle.message.num=$THROTTLE_MESSAGE_NUM \
         -Jnumber.records=$NUMBER_RECORDS \
-        -Jtruststore.path=$TRUSTSTORE_PATH \
-        -Jtruststore.pass=$TRUSTSTORE_PASS;
+        -Jssl.truststore.location=$SSL_TRUSTSTORE_LOCATION_CONFIG \
+        -Jssl.truststore.password=$SSL_TRUSTSTORE_PASSWORD_CONFIG \
+        -Jsasl.jaas.username=$SASL_JAAS_USERNAME \
+        -Jsasl.jaas.password=$SASL_JAAS_PASSWORD;
 done
 

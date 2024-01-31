@@ -1,6 +1,6 @@
 FROM registry.access.redhat.com/ubi8/openjdk-11
 
-ARG JMETER_VERSION="5.4.1"
+ARG JMETER_VERSION="5.5"
 ARG KAFKA_CLIENT_VERSION="2.7.0"
 ARG PROMETHEUS_PLUGIN_VERSION="0.6.0"
 ENV JMETER_CONTAINER_VERSION="1.0.0"
@@ -40,6 +40,8 @@ COPY ./jmeter-kafka-plugin/target/jmeter-kafka-plugin-*.jar ${JMETER_HOME}/lib/
 RUN mkdir -p ${JMETER_TESTPLANS}
 COPY ./testplans/* ${JMETER_TESTPLANS}/
 COPY ./run.sh ${JMETER_BIN}/
+COPY ./ca.p12 ${JMETER_HOME}/
+COPY ./ca-hml.p12 ${JMETER_HOME}/
 RUN chmod +x ${JMETER_BIN}/run.sh
 RUN date > ${JMETER_HOME}/build-date.txt
 

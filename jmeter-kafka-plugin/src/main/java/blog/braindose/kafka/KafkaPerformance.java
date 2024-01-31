@@ -10,6 +10,7 @@ import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
+import org.apache.kafka.common.config.SaslConfigs;
 import org.apache.kafka.common.config.SslConfigs;
 
 public class KafkaPerformance {
@@ -31,7 +32,7 @@ public class KafkaPerformance {
     private Properties props;
     private String kafkaTopic;
     private KafkaProducer<byte[], byte[]> producer;
-    
+
     private int throttleSizeRate; // Throttle by message size per second
     private int throttleMessageRate; // Throttle by number message per second
     private KafkaStatistics stats;
@@ -40,7 +41,8 @@ public class KafkaPerformance {
     public KafkaPerformance(String kafkaTopic, String kafkaMessage, int recordSize, int numRecords,
             String bootstrapServer, String compressionType, int batchSize, long lingerMS, long bufferMemory,
             String acks, int sendBufferBytes, int receiveBufferBytes, long maxBlockMS, int deliveryTimeoutMS,
-            int throttleSizeRate, int throttleMessageRate, String truststorePath, String truststorePass) {
+            int throttleSizeRate, int throttleMessageRate, String sslTruststoreLocation, String sslTruststorePassword, 
+            String saslJaasUsername, String saslJaasPassword) {
         this.kafkaTopic = kafkaTopic;
         this.kafkaMessage = kafkaMessage;
         this.recordSize = recordSize;
@@ -72,11 +74,13 @@ public class KafkaPerformance {
         this.props.put(ProducerConfig.RECEIVE_BUFFER_CONFIG, this.receiveBufferBytes);
         this.props.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, this.maxBlockMS);
         this.props.put(ProducerConfig.DELIVERY_TIMEOUT_MS_CONFIG, this.deliveryTimeoutMS);
-        if(truststorePath != null) {
-        	this.props.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, truststorePath);
-        	this.props.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, truststorePass);
-        	this.props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "ssl");
-        }
+        this.props.put(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG, "SASL_SSL");
+        this.props.put(SslConfigs.SSL_ENABLED_PROTOCOLS_CONFIG, "TLSv1.2,TLSv1.1,TLSv1");
+        this.props.put(SslConfigs.SSL_TRUSTSTORE_LOCATION_CONFIG, "/opt/jmeter/" + sslTruststoreLocation);
+        this.props.put(SslConfigs.SSL_TRUSTSTORE_PASSWORD_CONFIG, sslTruststorePassword);
+        this.props.put(SaslConfigs.SASL_MECHANISM, "SCRAM-SHA-512");
+        this.props.put(SaslConfigs.SASL_JAAS_CONFIG,
+                "org.apache.kafka.common.security.scram.ScramLoginModule required username=\"" + saslJaasUsername + "\" password=\"" + saslJaasPassword + "\";");
 
         initMessage();
 
@@ -84,10 +88,12 @@ public class KafkaPerformance {
 
     public KafkaPerformance(String kafkaTopic, String kafkaMessage, int recordSize, int numRecords,
             String bootstrapServer, String compressionType, int batchSize, long lingerMS, long bufferMemory,
-            String acks, int sendBufferBytes, int receiveBufferBytes, long maxBlockMS, int deliveryTimeoutMS, String truststorePath, String truststorePass) {
+            String acks, int sendBufferBytes, int receiveBufferBytes, long maxBlockMS, int deliveryTimeoutMS, 
+            String sslTruststoreLocation, String sslTruststorePassword, String saslJaasUsername, String saslJaasPassword) {
 
         this(kafkaTopic, kafkaMessage, recordSize, numRecords, bootstrapServer, compressionType, batchSize, lingerMS,
-                bufferMemory, acks, sendBufferBytes, receiveBufferBytes, maxBlockMS, deliveryTimeoutMS, 0, 0, truststorePath, truststorePass);
+                bufferMemory, acks, sendBufferBytes, receiveBufferBytes, maxBlockMS, deliveryTimeoutMS, 0, 0, 
+                sslTruststoreLocation, sslTruststorePassword, saslJaasUsername, saslJaasPassword);
     }
 
     private void initMessage() {
@@ -117,8 +123,10 @@ public class KafkaPerformance {
 
         for (int i = 0; i < numRecords; i++) {
             this.throttle.throttle(this.stats.getAverageBytesRate(), this.stats.getAverageRecordRate());
-            //this.recordSize = this.throttle.getKeepUpSize(this.stats.getAverageBytesRate(), this.stats.getAverageRecordRate(), this.recordSize);
-            //resizePayload();
+            // this.recordSize =
+            // this.throttle.getKeepUpSize(this.stats.getAverageBytesRate(),
+            // this.stats.getAverageRecordRate(), this.recordSize);
+            // resizePayload();
             record = new ProducerRecord<byte[], byte[]>(this.kafkaTopic, this.payload);
             long start = System.currentTimeMillis();
             producer.send(record, new KafkaRequestCallback(i, start, this.recordSize, this.stats));

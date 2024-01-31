@@ -138,14 +138,24 @@
             <stringProp name="Argument.value">${__P(throttle.message.num, 0)}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="TRUSTSTORE_PATH" elementType="Argument">
-            <stringProp name="Argument.name">TRUSTSTORE_PATH</stringProp>
-            <stringProp name="Argument.value">${__P(truststore.path,null)}</stringProp>
+          <elementProp name="SSL_TRUSTSTORE_LOCATION_CONFIG" elementType="Argument">
+            <stringProp name="Argument.name">SSL_TRUSTSTORE_LOCATION_CONFIG</stringProp>
+            <stringProp name="Argument.value">${__P(ssl.truststore.location, "")}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
-          <elementProp name="TRUSTSTORE_PASS" elementType="Argument">
-            <stringProp name="Argument.name">TRUSTSTORE_PASS</stringProp>
-            <stringProp name="Argument.value">${__P(truststore.pass,null)}</stringProp>
+          <elementProp name="SSL_TRUSTSTORE_PASSWORD_CONFIG" elementType="Argument">
+            <stringProp name="Argument.name">SSL_TRUSTSTORE_PASSWORD_CONFIG</stringProp>
+            <stringProp name="Argument.value">${__P(ssl.truststore.password, "")}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="SASL_JAAS_USERNAME" elementType="Argument">
+            <stringProp name="Argument.name">SASL_JAAS_USERNAME</stringProp>
+            <stringProp name="Argument.value">${__P(sasl.jaas.username, "")}</stringProp>
+            <stringProp name="Argument.metadata">=</stringProp>
+          </elementProp>
+          <elementProp name="SASL_JAAS_PASSWORD" elementType="Argument">
+            <stringProp name="Argument.name">SASL_JAAS_PASSWORD</stringProp>
+            <stringProp name="Argument.value">${__P(sasl.jaas.password, "")}</stringProp>
             <stringProp name="Argument.metadata">=</stringProp>
           </elementProp>
         </collectionProp>
@@ -177,8 +187,8 @@
 try{
 	KafkaPerformance kperf = new KafkaPerformance(&quot;${KAFKA_TOPIC}&quot;, &quot;${KAFKA_MESSAGE}&quot;, ${RECORD_SIZE}, ${NUMBER_RECORDS}, &quot;${BOOTSTRAP_SERVERS}&quot;,
 	            &quot;${COMPRESSION_TYPE}&quot;, ${BATCH_SIZE}, ${LINGER_MS}, ${BUFFER_MEMORY}, &quot;${ACKS}&quot;, ${SEND_BUFFER_BYTES},
-	            ${RECEIVE_BUFFER_BYTES}, ${MAX_BLOCK_MS}, ${DELIVERY_TIMEOUT_MS}, ${THROTTLE_RECORDSIZE}, ${THROTTLE_MESSAGENUM},&quot;${TRUSTSTORE_PATH}&quot;, &quot;${TRUSTSTORE_PASS}&quot;)
-	
+	            ${RECEIVE_BUFFER_BYTES}, ${MAX_BLOCK_MS}, ${DELIVERY_TIMEOUT_MS}, ${THROTTLE_RECORDSIZE}, ${THROTTLE_MESSAGENUM}, &quot;${SSL_TRUSTSTORE_LOCATION_CONFIG}&quot;, 
+              &quot;${SSL_TRUSTSTORE_PASSWORD_CONFIG}&quot;, &quot;${SASL_JAAS_USERNAME}&quot;, &quot;${SASL_JAAS_PASSWORD}&quot;);	
 	            
 	kperf.send();
 }
